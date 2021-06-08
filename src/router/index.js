@@ -11,6 +11,7 @@ const routes = [
   {
     path: '/user',
     name: 'user',
+    hideInMenu: true,
     // component: { render: h => h('router-view') },
     component: () => import(/* webpackChunkName: "user" */ "../layouts/UserLayout.vue"),
     children: [
@@ -32,7 +33,7 @@ const routes = [
   },
   {
     path: '/',
-    name: 'index',
+    // name: 'index',
     component: BasicLayout,
     meta: { title: 'menu.home' },
     redirect: '/dashboard/analysis',
@@ -41,55 +42,65 @@ const routes = [
       {
         path: '/dashboard',
         name: 'dashboard',
-        redirect: '/dashboard/analysis',
+        // redirect: '/dashboard/analysis',
         component: { render: h => h('router-view') },
-        meta: { title: 'menu.dashboard', keepAlive: true, permission: ['dashboard'] },
+        // meta: { title: 'menu.dashboard', keepAlive: true, permission: ['dashboard'] },
+        meta: { icon: 'dashboard', title: '仪表盘' },
         children: [
           {
             path: '/dashboard/analysis/:pageNo([1-9]\\d*)?',
             name: 'Analysis',
             component: () => import('@/views/Dashboard/Analysis.vue'),
-            meta: { title: 'menu.dashboard.analysis', keepAlive: false, permission: ['dashboard'] }
+            // meta: { title: 'menu.dashboard.analysis', keepAlive: false, permission: ['dashboard'] }
+            meta: {title: '分析页'}
           },
-          // 外部链接
-          {
-            path: 'https://www.baidu.com/',
-            name: 'Monitor',
-            meta: { title: 'menu.dashboard.monitor', target: '_blank' }
-          },
-          // {
-          //   path: '/dashboard/workplace',
-          //   name: 'Workplace',
-          //   component: () => import('@/views/dashboard/Workplace'),
-          //   meta: { title: 'menu.dashboard.workplace', keepAlive: true, permission: ['dashboard'] }
-          // }
         ]
       },
       // forms
       {
         path: '/form',
+        name: 'form',
         redirect: '/form/base-form',
         component: { render: h => h('router-view') },
-        meta: { title: 'menu.form', icon: 'form', permission: ['form'] },
+        // meta: { title: 'menu.form', icon: 'form', permission: ['form'] },
+        meta: { icon: 'form', title: '表单' },
         children: [
           {
             path: '/form/base-form',
             name: 'BaseForm',
             component: () => import('@/views/Forms/BasicForm'),
-            meta: { title: 'menu.form.basic-form', keepAlive: true, permission: ['form'] }
+            // meta: { title: 'menu.form.basic-form', keepAlive: true, permission: ['form'] }
+            meta: {title: '基础表单'}
           },
           {
             path: '/form/step-form',
             name: 'StepForm',
+            hideChildrenInMenu: true,
             component: () => import('@/views/Forms/StepForm/index'),
-            meta: { title: 'menu.form.step-form', keepAlive: true, permission: ['form'] }
+            // meta: { title: 'menu.form.step-form', keepAlive: true, permission: ['form'] },
+            meta: {title: '分步表单'},
+            children: [
+              {
+                path: '/form/step-form',
+                redirect: '/form/step-form/info'
+              },
+              {
+                path: '/form/step-form/info',
+                name: 'info',
+                component: () => import(/* webpackChunkName: "form" */ '@/views/Forms/StepForm/Step1.vue')
+              },
+              {
+                path: '/form/step-form/confirm',
+                name: 'confirm',
+                component: () => import(/* webpackChunkName: "form" */ '@/views/Forms/StepForm/Step2.vue')
+              },
+              {
+                path: '/form/step-form/result',
+                name: 'result',
+                component: () => import(/* webpackChunkName: "form" */ '@/views/Forms/StepForm/Step3.vue')
+              }
+            ]
           },
-          // {
-          //   path: '/form/advanced-form',
-          //   name: 'AdvanceForm',
-          //   component: () => import('@/views/form/advancedForm/AdvancedForm'),
-          //   meta: { title: 'menu.form.advanced-form', keepAlive: true, permission: ['form'] }
-          // }
         ]
       },
     ]
@@ -97,6 +108,7 @@ const routes = [
   {
     path: '*',
     name: '404',
+    hideInMenu: true,
     component: NotFound
   }
 ];
