@@ -1,9 +1,13 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
+import findLast from "lodash/findLast";
+import {notification} from "ant-design-vue"
 import BasicLayout from "../layouts/BasicLayout"
 import NotFound from "../views/404.vue"
+import Forbidden from "../views/403.vue"
 import NProgress from "nprogress"
 import 'nprogress/nprogress.css'
+import {check, isLogin} from '../utils/auth'
 
 Vue.use(VueRouter);
 
@@ -33,9 +37,8 @@ const routes = [
   },
   {
     path: '/',
-    // name: 'index',
     component: BasicLayout,
-    meta: { title: 'menu.home' },
+    meta: { authority: ['user', 'admin'] },
     redirect: '/dashboard/analysis',
     children: [
       // dashboard
@@ -48,7 +51,7 @@ const routes = [
         meta: { icon: 'dashboard', title: '仪表盘' },
         children: [
           {
-            path: '/dashboard/analysis/:pageNo([1-9]\\d*)?',
+            path: '/dashboard/analysis',
             name: 'Analysis',
             component: () => import('@/views/Dashboard/Analysis.vue'),
             // meta: { title: 'menu.dashboard.analysis', keepAlive: false, permission: ['dashboard'] }
@@ -62,8 +65,7 @@ const routes = [
         name: 'form',
         redirect: '/form/base-form',
         component: { render: h => h('router-view') },
-        // meta: { title: 'menu.form', icon: 'form', permission: ['form'] },
-        meta: { icon: 'form', title: '表单' },
+        meta: { icon: 'form', title: '表单', authority: ['admin'] },
         children: [
           {
             path: '/form/base-form',
@@ -106,6 +108,12 @@ const routes = [
     ]
   },
   {
+    path: '/403',
+    name: '403',
+    hideInMenu: true,
+    component: Forbidden
+  },
+  {
     path: '*',
     name: '404',
     hideInMenu: true,
@@ -123,7 +131,24 @@ router.beforeEach((to, from, next) => {
   if (to.path !== from.path) {
     NProgress.start();
   }
-  
+  const record = findLast(to.matched, record => record.meta.authority)
+  if (record && !check(record.meta.authority)) {
+    if (!isLogin() && to.path !== '/user/login') {
+      next({
+        path: '/user/login'
+      }) } else if(to.path !== '/403') {
+
+        notification.error({
+          message: '403',
+          description:
+            '你没有权限访问，请联系管理员咨询。',
+        });
+        next({
+          path: '/403'
+        });
+      }
+      NProgress.done();
+    }
   next();
 })
 

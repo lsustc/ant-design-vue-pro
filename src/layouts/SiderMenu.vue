@@ -2,13 +2,16 @@
   <div style="width: 256px">
     <a-menu
       :selected-keys="selectedKeys"
-      :open-keys="openKeys"
+      :open-keys.sync="openKeys"
       mode="inline"
       :theme="theme"
-      :inline-collapsed="collapsed"
     >
       <template v-for="item in menuData">
-        <a-menu-item v-if="!item.children" :key="item.path">
+        <a-menu-item
+          v-if="!item.children"
+          :key="item.path"
+          @click="() => $router.push({ path: item.path, query: $route.query })"
+        >
           <a-icon v-if="item.meta.icon" :type="item.meta.icon" />
           <span>{{ item.meta.title }}</span>
         </a-menu-item>
@@ -20,25 +23,22 @@
 
 <script>
 import SubMenu from "./SubMenu";
+import {check} from "../utils/auth"
 export default {
   props: {
     theme: {
       type: String,
-      default: 'dark'
-    }
+      default: "dark",
+    },
   },
   components: {
-    'sub-menu': SubMenu,
+    "sub-menu": SubMenu,
   },
   watch: {
-    '$route.path': function(val) {
+    "$route.path": function (val) {
       this.selectedKeys = this.selectedKeysMap[val];
       this.openKeys = this.collapsed ? [] : this.openKeysMap[val];
-    }
-  },
-  mounted() {
-    console.log(this.$route.path);
-    console.log(this.openKeys)
+    },
   },
   data() {
     this.selectedKeysMap = {};
@@ -48,7 +48,7 @@ export default {
       collapsed: false,
       menuData,
       selectedKeys: this.selectedKeysMap[this.$route.path],
-      openKeys: this.collapsed ? [] : this.openKeysMap[this.$route.path]
+      openKeys: this.collapsed ? [] : this.openKeysMap[this.$route.path],
     };
   },
   methods: {
@@ -57,24 +57,41 @@ export default {
     },
     getMenuData(routes = [], parentKeys = [], selectedKey) {
       const menuData = [];
-      routes.forEach((item) => {
-        if(item.name && !item.hideInMenu) {
-          this.openKeysMap[item.path] = parentKeys;
-          this.selectedKeysMap[item.path] = [item.path || selectedKey]
-          const newItem = {...item};
-          delete newItem.children;
-          if (item.children && !item.hideChildrenInMenu) {
-            newItem.children = this.getMenuData(item.children, [...parentKeys, item.path]);
-          } else {
-            this.getMenuData(item.children, selectedKey ? parentKeys : [...parentKeys, item.path], selectedKey || item.path);
-          }
-          menuData.push(newItem);
-        } else if (!item.hideInMenu && !item.hideChildrenInMenu && item.children) {
-          menuData.push(...this.getMenuData(item.children, [...parentKeys, item.path]))
+      for (let item of routes) {
+        if (item.meta && item.meta.authority && !check(item.meta.authority)) {
+          break;
         }
-      });
+          if (item.name && !item.hideInMenu) {
+            this.openKeysMap[item.path] = parentKeys;
+            this.selectedKeysMap[item.path] = [item.path || selectedKey];
+            const newItem = { ...item };
+            delete newItem.children;
+            if (item.children && !item.hideChildrenInMenu) {
+              newItem.children = this.getMenuData(item.children, [
+                ...parentKeys,
+                item.path,
+              ]);
+            } else {
+              this.getMenuData(
+                item.children,
+                selectedKey ? parentKeys : [...parentKeys, item.path],
+                selectedKey || item.path
+              );
+            }
+            menuData.push(newItem);
+          } else if (
+            !item.hideInMenu &&
+            !item.hideChildrenInMenu &&
+            item.children
+          ) {
+            menuData.push(
+              ...this.getMenuData(item.children, [...parentKeys, item.path])
+            );
+          }
+      }
+
       return menuData;
-    }
+    },
   },
 };
 </script>
