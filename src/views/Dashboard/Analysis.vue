@@ -6,15 +6,30 @@
 
 <script>
 import Chart from "../../components/Chart.vue";
-import random from 'lodash/random';
+import axios from 'axios'
 export default {
   components: {
     Chart,
   },
   data() {
       // 指定图表的配置项和数据
-        var option = {
-            title: {
+      var option = {};
+      return {
+          option,
+          interval: null
+      }
+  },
+  mounted() {
+    this.getChartData();
+    this.interval = setInterval(() => {
+      this.getChartData();
+    }, 3000); 
+  },
+  methods: {
+    getChartData() {
+      axios.get('/api/dashboard/chart', {params: {ID: 12345}}).then(response => {
+        this.option = {
+          title: {
                 text: 'ECharts 入门示例'
             },
             tooltip: {},
@@ -28,22 +43,11 @@ export default {
             series: [{
                 name: '销量',
                 type: 'bar',
-                data: [5, 20, 36, 10, 10, 20]
+                data: response.data
             }]
-        };
-      return {
-          option,
-          interval: null
-      }
-  },
-  mounted() {
-    this.interval = setInterval(() => {
-      this.option.series[0].data = this.option.series[0].data.map(() => {
-        return random(100)
+        }
       });
-      this.option = {...this.option};
-    }, 3000);
-    
+    }
   },
   beforeDestroy() {
     clearInterval(this.interval);
