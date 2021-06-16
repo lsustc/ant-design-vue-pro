@@ -6,6 +6,7 @@
 
 <script>
 import Chart from "../../components/Chart.vue";
+import random from 'lodash/random';
 export default {
   components: {
     Chart,
@@ -31,8 +32,21 @@ export default {
             }]
         };
       return {
-          option
+          option,
+          interval: null
       }
+  },
+  mounted() {
+    this.interval = setInterval(() => {
+      this.option.series[0].data = this.option.series[0].data.map(() => {
+        return random(100)
+      });
+      this.option = {...this.option};
+    }, 3000);
+    
+  },
+  beforeDestroy() {
+    clearInterval(this.interval);
   }
 };
 </script>

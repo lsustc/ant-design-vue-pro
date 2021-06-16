@@ -21,7 +21,13 @@ export default {
     watch: {
         option(val) {
             this.chart.setOption(val);
-        }
+        },
+        // option: {
+        //     handler(val) {
+        //         this.chart.setOption(val);
+        //     },
+        //     deep: true
+        // }
     },
     mounted() {
         this.renderChart();
