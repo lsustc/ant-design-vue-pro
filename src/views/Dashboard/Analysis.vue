@@ -6,7 +6,7 @@
 
 <script>
 import Chart from "../../components/Chart.vue";
-import axios from 'axios'
+import request from '../../utils/request';
 export default {
   components: {
     Chart,
@@ -27,7 +27,11 @@ export default {
   },
   methods: {
     getChartData() {
-      axios.get('/api/dashboard/chart', {params: {ID: 12345}}).then(response => {
+      request({
+        url: '/api/dashboard/chart',
+        method: 'get',
+        params: {ID: 12345}
+      }).then(response => {
         this.option = {
           title: {
                 text: 'ECharts 入门示例'
