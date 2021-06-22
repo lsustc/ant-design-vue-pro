@@ -1,6 +1,6 @@
 <template>
-    <div>
-        404
+    <div style="text-align:center">
+        <IconFont type="icon-404" style="font-size:24px"/>
     </div>
 </template>
 
