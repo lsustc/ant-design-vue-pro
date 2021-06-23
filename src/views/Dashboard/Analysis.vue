@@ -1,5 +1,7 @@
 <template>
   <div>
+    {{$t('message')['app.dashboard.analysis']}}：
+      <a-date-picker/>
       <Chart :option="option" style="height: 400px"/>
   </div>
 </template>
