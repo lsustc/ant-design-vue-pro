@@ -5,7 +5,9 @@
 </template>
 
 <script>
-import * as echarts from "echarts";
+import echarts from "echarts/lib/echarts";
+import 'echarts/lib/chart/bar';
+import 'echarts/lib/component/title';
 import { addListener, removeListener } from "resize-detector";
 import debounce from "lodash/debounce";
 export default {
