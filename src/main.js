@@ -22,6 +22,10 @@ import {
 import Authorized from "./components/Authorized.vue"
 import Auth from "./directives/auth";
 import qs from 'querystring';
+import VueHighlightJS from 'vue-highlightjs'
+import 'highlight.js/styles/github.css';
+
+
 
 Vue.config.productionTip = false;
 
@@ -40,6 +44,7 @@ Vue.use(DatePicker);
 Vue.component('Authorized', Authorized);
 Vue.use(Auth);
 Vue.use(VueI18n);
+Vue.use(VueHighlightJS);
 
 const i18n = new VueI18n({
   locale: qs.parse(location.search).locale || 'zhCN',

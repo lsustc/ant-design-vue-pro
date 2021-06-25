@@ -5,11 +5,17 @@
 </template>
 
 <script>
-import echarts from "echarts/lib/echarts";
+import * as echarts from "echarts/lib/echarts";
 import 'echarts/lib/chart/bar';
 import 'echarts/lib/component/title';
 import { addListener, removeListener } from "resize-detector";
 import debounce from "lodash/debounce";
+import { TooltipComponent } from 'echarts/components';
+echarts.use([TooltipComponent]);
+import { LegendComponent } from 'echarts/components';
+echarts.use([LegendComponent]);
+import { GridComponent } from 'echarts/components';
+echarts.use([GridComponent]);
 export default {
     props: {
         option: {
